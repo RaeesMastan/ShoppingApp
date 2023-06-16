@@ -15,8 +15,7 @@ using System.Threading.Tasks;
 namespace Shopbridge_base.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ApiController]    
     public class ProductsController : ControllerBase
     {
         private readonly IProductService productService;
@@ -30,6 +29,7 @@ namespace Shopbridge_base.Controllers
 
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
         {
             try
@@ -45,6 +45,7 @@ namespace Shopbridge_base.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ServiceFilter(typeof(ValidateEntityExistsAttribute<Product>))]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
@@ -63,26 +64,28 @@ namespace Shopbridge_base.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ServiceFilter(typeof(UpdateValidationAttributeClass<Product>))]        
         public async Task<IActionResult> PutProduct(int id, Product _product)
         {                                      
             var result =repository.InsertProduct(id,_product);
             if(result.Result.ToString()=="Success")
-                return Ok("Product Updated");
+                return Ok(_product.ProductName +" Product Updated");
 
             return NotFound(result);
         }
 
 
-        [HttpPost]        
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             try
             {
                 var addedproduct = repository.AddProduct(product);                              
                 if(addedproduct.Result=="Success")
-                return Ok("New Product Added");                
-                    return NotFound(addedproduct);
+                return Ok(product.ProductName +" New Product Added Succesfully");                
+                    return NotFound(addedproduct.Result);
             }
             catch (Exception ex)
             {
@@ -92,13 +95,14 @@ namespace Shopbridge_base.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [ServiceFilter(typeof(ValidateEntityExistsAttribute<Product>))]
         public async Task<IActionResult> DeleteProduct(int id)
         {            
             try
             {
-                    await repository.DeleteProductbyId(id);
-                return Ok("Product deleted successfully... ");
+                    Product DeletedItem=await repository.DeleteProductbyId(id);
+                return Ok("Product id " +DeletedItem.Product_Id.ToString()+" "+DeletedItem.ProductName.ToString() + " Item deleted Successfully");
 
 
             }
@@ -121,11 +125,7 @@ namespace Shopbridge_base.Controllers
                     return Ok(result);
                 }
 
-                return Unauthorized();
-                //var addedproduct = repository.AddProduct(product);
-                //if (addedproduct.Result == "Success")
-                //    return Ok("New Product Added");
-                //return NotFound(addedproduct);
+                return Unauthorized();               
             }
             catch (Exception ex)
             {

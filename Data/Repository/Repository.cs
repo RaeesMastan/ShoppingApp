@@ -54,15 +54,15 @@ namespace Shopbridge_base.Data.Repository
             
         }
 
-        public async Task <bool> DeleteProductbyId(int id)
+        public async Task <Product> DeleteProductbyId(int id)
         {
             var NeedToDelete =await dbcontext.Product.FindAsync(id);
 
             if (NeedToDelete == null)
-                return false;
+                return NeedToDelete;
              dbcontext.Remove(NeedToDelete);
             await dbcontext.SaveChangesAsync();
-            return true;
+            return NeedToDelete;
         }
 
         public async Task<string> AddProduct(Product product)

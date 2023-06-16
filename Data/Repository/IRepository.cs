@@ -17,7 +17,7 @@ namespace Shopbridge_base.Data.Repository
 
         Task<IEnumerable<Product>> Get<Product>();
         Task <Product> GetProductbyId(int id);
-        public Task <bool> DeleteProductbyId(int id);
+        public Task <Product> DeleteProductbyId(int id);
         public Task<string> AddProduct(Product product);
 
         Task<string> InsertProduct(int Id, Product product);
